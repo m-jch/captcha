@@ -1,6 +1,6 @@
 #Captcha
 
-> A simple captcha for laravel 4
+> A simple captcha for laravel 4 
 
 ## Preview
 
