@@ -31,7 +31,7 @@ update `app.php` file in `app/config` directory:
 
 ##How to use
 
-in your HTML from add following code:
+in your HTML form add following code:
 
 ```html
 <img src="{{ URL::to('/captcha')}}">
