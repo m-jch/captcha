@@ -2,6 +2,7 @@
     "name": "mohsen/captcha",
     "description": "A simple captcha for laravel 4",
     "keywords": ["Laravel 4", "Laravel", "Captcha"],
+    "license": "MIT",
     "authors": [
         {
             "name": "mohsen shafiei",
