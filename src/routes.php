@@ -1,5 +1,5 @@
 <?php
 
-Route::get('/captcha', function() {
-	return Captcha::create();
+Route::get('/captcha/{hashedUrl}', function($hashedUrl) {
+	return Captcha::create($hashedUrl);
 });

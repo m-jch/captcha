@@ -25,7 +25,15 @@ update `app.php` file in `app/config` directory:
 
 ```php
 'providers' => array(
-  'Mohsen\Captcha\CaptchaServiceProvider'
+  ...
+  'Mohsen\Captcha\CaptchaServiceProvider',
+  ...
+),
+...
+'aliases' => array(
+  ...
+  'Captcha'		  => 'Mohsen\Captcha\Captcha',
+  ...
 ),
 ```
 
@@ -34,7 +42,7 @@ update `app.php` file in `app/config` directory:
 in your HTML form add following code:
 
 ```html
-<img src="{{ URL::to('/captcha')}}">
+<img src="{{Captcha::getImage()}}">
 <input type="text" name="user-captcha">
 ```
 
@@ -52,3 +60,20 @@ if($validator -> fails()) {
 }
 ```
 
+### Captcha::getImage() parameters
+
+All parameters are optional.
+
+```php
+<img src="{{Captcha::getImage($count, $width, $height, $backgroundColor, $quality)}}">
+```
+
+`$count`: Number of characters [default=7]
+
+`$width`: Width of image [default=160]
+
+`$height`: Height of image [default=70]
+
+`$backgroundColor`: Background color of image [default='efefef']
+
+`$quality`: Quality of image [default=50]

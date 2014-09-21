@@ -2,10 +2,11 @@
     "name": "mohsen/captcha",
     "description": "A simple captcha for laravel 4",
     "keywords": ["Laravel 4", "Laravel", "Captcha"],
+    "license": "MIT",
     "authors": [
         {
             "name": "mohsen shafiei",
-            "email": "mohsen.jch@gmail.com"
+            "email": "mohsen.sh12@hotmail.com"
         }
     ],
     "require": {
@@ -16,6 +17,5 @@
         "psr-0": {
             "Mohsen\\Captcha\\": "src/"
         }
-    },
-    "minimum-stability": "stable"
+    }
 }
