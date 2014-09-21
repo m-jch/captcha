@@ -62,6 +62,8 @@ if($validator -> fails()) {
 
 ### Captcha::getImage() parameters
 
+All parameters are optional.
+
 ```php
 <img src="{{Captcha::getImage($count, $width, $height, $backgroundColor, $quality)}}">
 ```
