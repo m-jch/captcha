@@ -1,37 +1,59 @@
 <?php namespace Mohsen\Captcha;
-use Session, Hash, URL;
+
+use Session, Hash, URL, Config;
 
 class Captcha {
  
-  public static function create(){
-    $captchaText = (string) mt_rand(100000, 999999); strtoupper(substr(md5(microtime()), 0, 7));
+  public static function getImage($count = null, $width = null, $height = null, $backgroundColor = null, $quality = null)
+  {
+    $count = isset($count) ? $count : 7;
+    $width = isset($width) ? $width : 160;
+    $height = isset($height) ? $height : 70;
+    $backgroundColor = isset($backgroundColor) ? $backgroundColor : 'efefef';
+    $quality = isset($quality) ? $quality : 50;
+    
+    if ($quality > 100 || $quality < 0) $quality = 50;
+    
+    $url = 'count='.(int)$count.'&width='.(int)$width.'&height='.(int)$height.'&backgroundcolor='.$backgroundColor.'&quality='.(int)$quality;
+    $hashedUrl = base64_encode($url);
+    
+    return URL::to('/captcha/'.$hashedUrl);
+  }
+  
+  public static function create($hashedUrl)
+  {
+    $url = base64_decode($hashedUrl);
+    parse_str($url, $url);
+    
+    $captchaText = strtoupper(substr(md5(microtime()), 0, $url['count']));
     Session::put('captchaHash', Hash::make($captchaText));
-
-    $image = imagecreate(160, 70);
-    $background = imagecolorallocatealpha($image, 239, 239, 239, 1);
+    
+    $image = imagecreate($url['width'], $url['height']);
+    $background = imagecolorallocatealpha($image, hexdec(substr($url['backgroundcolor'], 0, 2)), hexdec(substr($url['backgroundcolor'], 2, 2)), hexdec(substr($url['backgroundcolor'], 4, 2)), 1);
     $textColor = imagecolorallocatealpha($image, 0, 0, 0, 1);
     $x = 5;
     $y = 50;
     $angle = 0;
 
-    for($i = 0; $i < 7; $i++) {
+    for($i = 0; $i < $url['count']; $i++) {
       $fontSize = mt_rand(15, 35);
       $text = substr($captchaText, $i, 1);
-      imagettftext($image, $fontSize, $angle, $x, $y, $textColor, __DIR__ . '/../../../public/fonts/impact.ttf', $text);
+      imagettftext($image, $fontSize, $angle, $x, $y, $textColor, __DIR__.'/../../../public/fonts/impact.ttf', $text);
 
       $x = $x + 17 + mt_rand(1, 10);
       $y = mt_rand(40, 65);
-      $angle = mt_rand(0, 10);
+      $angle = mt_rand(5, 10);
     }
 
     header('Cache-Control: no-cache, no-store, max-age=0, must-revalidate');
 		header('Pragma: no-cache');
 		header('Content-type: image/jpeg');
-    imagejpeg($image, null, 100);
+    imagejpeg($image, null, $url['quality']);
     imagedestroy($image);
   }
   
-  public static function validate($value) {
+  public static function validate($value)
+  {
     if(Hash::check($value, Session::get('captchaHash'))) {
       return true;
     }
