@@ -25,7 +25,15 @@ update `app.php` file in `app/config` directory:
 
 ```php
 'providers' => array(
-  'Mohsen\Captcha\CaptchaServiceProvider'
+  ...
+  'Mohsen\Captcha\CaptchaServiceProvider',
+  ...
+),
+...
+'aliases' => array(
+  ...
+  'Captcha'		  => 'Mohsen\Captcha\Captcha',
+  ...
 ),
 ```
 
