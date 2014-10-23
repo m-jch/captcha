@@ -1,6 +1,6 @@
 <?php namespace Mohsen\Captcha;
 
-use Session, Hash, URL, Config, Str;
+use Session, Hash, URL, Config, Str, Crypt;
 
 class Captcha {
 
@@ -15,14 +15,14 @@ class Captcha {
     if ($quality > 100 || $quality < 0) $quality = 50;
 
     $url = 'count='.(int)$count.'&width='.(int)$width.'&height='.(int)$height.'&backgroundcolor='.$backgroundColor.'&quality='.(int)$quality;
-    $hashedUrl = base64_encode($url);
+    $hashedUrl = Crypt::encrypt($url);
 
     return URL::to('/captcha/'.$hashedUrl);
   }
 
   public static function create($hashedUrl)
   {
-    $url = base64_decode($hashedUrl);
+    $url = Crypt::decrypt($hashedUrl);
     parse_str($url, $url);
 
     $captchaText = strtoupper(substr(Str::random(), 0, $url['count']));
