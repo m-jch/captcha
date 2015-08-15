@@ -1,21 +1,22 @@
 <?php namespace Mohsen\Captcha;
 
 use Session, Hash, URL, Config, Str, Crypt;
+use Symfony\Component\Security\Csrf\CsrfTokenManager;
+use Symfony\Component\Security\Csrf\CsrfToken;
 
 class Captcha {
 
     public static function getImage($count = null, $width = null, $height = null, $backgroundColor = null, $quality = null)
     {
-        $count = isset($count) ? $count : 7;
-        $width = isset($width) ? $width : 160;
-        $height = isset($height) ? $height : 70;
-        $backgroundColor = isset($backgroundColor) ? $backgroundColor : 'efefef';
-        $quality = isset($quality) ? $quality : 50;
+        $data = [];
+        $data['count'] = isset($count) ? $count : 7;
+        $data['width'] = isset($width) ? $width : 160;
+        $data['height'] = isset($height) ? $height : 70;
+        $data['backgroundcolor'] = isset($backgroundColor) ? $backgroundColor : 'efefef';
+        $data['quality'] = isset($quality) && ($quality > 100 || $quality < 0) ? $quality : 50;
+        $data['csrf_token'] = static::generateCsrf();
 
-        if ($quality > 100 || $quality < 0) $quality = 50;
-
-        $url = 'count='.(int)$count.'&width='.(int)$width.'&height='.(int)$height.'&backgroundcolor='.$backgroundColor.'&quality='.(int)$quality;
-        $hashedUrl = Crypt::encrypt($url);
+        $hashedUrl = Crypt::encrypt(http_build_query($data));
 
         return URL::to('/captcha/'.$hashedUrl);
     }
@@ -24,6 +25,7 @@ class Captcha {
     {
         $url = Crypt::decrypt($hashedUrl);
         parse_str($url, $url);
+        static::checkCsrf($url['csrf_token']);
 
         $captchaText = strtoupper(substr(Str::random(), 0, $url['count']));
         Session::put('captchaHash', Hash::make($captchaText));
@@ -60,5 +62,23 @@ class Captcha {
             return true;
         }
         return false;
+    }
+
+    protected static function generateCsrf()
+    {
+        $csrfTokenManger = new CsrfTokenManager();
+        return $csrfTokenManger->getToken('login_csrf')->getValue();
+    }
+
+    protected static function checkCsrf($csrfValue)
+    {
+        $csrfTokenManger = new CsrfTokenManager();
+        $csrfToken = new CsrfToken('login_csrf', $csrfValue);
+
+        if (!$csrfTokenManger->isTokenValid($csrfToken)) {
+            die;
+        } else {
+            $csrfTokenManger->removeToken('login_csrf');
+        }
     }
 }
