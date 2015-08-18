@@ -58,7 +58,7 @@ class Captcha {
 
     public static function validate($value)
     {
-        if(Hash::check(strtoupper($value), Session::get('captchaHash'))) {
+        if (Hash::check($value, Session::get('captchaHash'))) {
             return true;
         }
         return false;
